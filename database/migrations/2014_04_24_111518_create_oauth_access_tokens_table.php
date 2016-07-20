@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth access tokens table migration class.
@@ -37,9 +36,7 @@ class CreateOauthAccessTokensTable extends Migration
             $table->unique(['id', 'session_id']);
             $table->index('session_id');
 
-            $table->foreign('session_id')
-                  ->references('id')->on('oauth_sessions')
-                  ->onDelete('cascade');
+            $table->foreign('session_id')->references('id')->on('oauth_sessions')->onDelete('cascade');
         });
     }
 
@@ -53,6 +50,7 @@ class CreateOauthAccessTokensTable extends Migration
         Schema::table('oauth_access_tokens', function (Blueprint $table) {
             $table->dropForeign('oauth_access_tokens_session_id_foreign');
         });
+
         Schema::drop('oauth_access_tokens');
     }
 }

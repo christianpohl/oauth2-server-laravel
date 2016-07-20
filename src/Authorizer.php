@@ -163,7 +163,7 @@ class Authorizer
      *
      * @return string the auth code redirect url
      */
-    public function issueAuthCode($ownerType, $ownerId, $params = [])
+    public function issueAuthCode($ownerType, $ownerId, array $params = [])
     {
         $params = array_merge($this->authCodeRequestParams, $params);
 
@@ -180,9 +180,9 @@ class Authorizer
         $error = new AccessDeniedException();
 
         return $this->getRedirectUriGenerator()->make($this->getAuthCodeRequestParam('redirect_uri'), [
-                        'error' => $error->errorType,
-                        'error_description' => $error->getMessage(),
-                ]
+                'error' => $error->errorType,
+                'error_description' => $error->getMessage(),
+            ]
         );
     }
 

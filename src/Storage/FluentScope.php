@@ -107,31 +107,56 @@ class FluentScope extends AbstractFluentAdapter implements ScopeInterface
      */
     public function get($scope, $grantType = null, $clientId = null)
     {
-        $query = $this->getConnection()->table('oauth_scopes')
+        /*$query = $this->getConnection()->table('oauth_scopes')
                     ->select('oauth_scopes.id as id', 'oauth_scopes.description as description')
-                    ->where('oauth_scopes.id', $scope);
+                    ->where('oauth_scopes.id', $scope);*/
+
+        $query = $this->getConnection()->table('oauth_scopes')
+            ->where('id', $scope);
 
         if ($this->limitClientsToScopes === true && !is_null($clientId)) {
-            $query = $query->join('oauth_client_scopes', 'oauth_scopes.id', '=', 'oauth_client_scopes.scope_id')
-                           ->where('oauth_client_scopes.client_id', $clientId);
+            /*$query = $query->join('oauth_client_scopes', 'oauth_scopes.id', '=', 'oauth_client_scopes.scope_id')
+                           ->where('oauth_client_scopes.client_id', $clientId);*/
+
+            $allowedScopeIds = $this->getConnection()->table('oauth_client_scopes')
+                ->where('client_id', $clientId)
+                ->pluck('scope_id');
+
+            $query = $query->whereIn('client_id', $allowedScopeIds);
         }
 
         if ($this->limitScopesToGrants === true && !is_null($grantType)) {
-            $query = $query->join('oauth_grant_scopes', 'oauth_scopes.id', '=', 'oauth_grant_scopes.scope_id')
+            /*$query = $query->join('oauth_grant_scopes', 'oauth_scopes.id', '=', 'oauth_grant_scopes.scope_id')
                            ->join('oauth_grants', 'oauth_grants.id', '=', 'oauth_grant_scopes.grant_id')
-                           ->where('oauth_grants.id', $grantType);
+                           ->where('oauth_grants.id', $grantType);*/
+
+            $allowedGrantIds = $this->getConnection()->table('oauth_grants')
+                ->where('id', $grantType)
+                ->pluck('id');
+
+            $allowedScopeIds = $this->getConnection()->table('oauth_grant_scopes')
+                ->whereIn('grant_id', $allowedGrantIds)
+                ->pluck('scope_id');
+
+            $query = $query->whereIn('id', $allowedScopeIds);
         }
 
         $result = $query->first();
 
         if (is_null($result)) {
-            return;
+            return null;
         }
 
         $scope = new ScopeEntity($this->getServer());
-        $scope->hydrate([
+
+        /*$scope->hydrate([
             'id' => $result->id,
             'description' => $result->description,
+        ]);*/
+
+        $scope->hydrate([
+            'id' => $result['id'],
+            'description' => $result['description']
         ]);
 
         return $scope;

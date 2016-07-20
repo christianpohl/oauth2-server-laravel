@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth code scopes table migration class.
@@ -37,13 +36,8 @@ class CreateOauthAuthCodeScopesTable extends Migration
             $table->index('auth_code_id');
             $table->index('scope_id');
 
-            $table->foreign('auth_code_id')
-                  ->references('id')->on('oauth_auth_codes')
-                  ->onDelete('cascade');
-
-            $table->foreign('scope_id')
-                  ->references('id')->on('oauth_scopes')
-                  ->onDelete('cascade');
+            $table->foreign('auth_code_id')->references('id')->on('oauth_auth_codes')->onDelete('cascade');
+            $table->foreign('scope_id')->references('id')->on('oauth_scopes')->onDelete('cascade');
         });
     }
 
@@ -58,6 +52,7 @@ class CreateOauthAuthCodeScopesTable extends Migration
             $table->dropForeign('oauth_auth_code_scopes_auth_code_id_foreign');
             $table->dropForeign('oauth_auth_code_scopes_scope_id_foreign');
         });
+
         Schema::drop('oauth_auth_code_scopes');
     }
 }

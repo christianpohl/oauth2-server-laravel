@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth session scopes table migration class.
@@ -37,13 +36,8 @@ class CreateOauthSessionScopesTable extends Migration
             $table->index('session_id');
             $table->index('scope_id');
 
-            $table->foreign('session_id')
-                  ->references('id')->on('oauth_sessions')
-                  ->onDelete('cascade');
-
-            $table->foreign('scope_id')
-                  ->references('id')->on('oauth_scopes')
-                  ->onDelete('cascade');
+            $table->foreign('session_id')->references('id')->on('oauth_sessions')->onDelete('cascade');
+            $table->foreign('scope_id')->references('id')->on('oauth_scopes')->onDelete('cascade');
         });
     }
 
@@ -58,6 +52,7 @@ class CreateOauthSessionScopesTable extends Migration
             $table->dropForeign('oauth_session_scopes_session_id_foreign');
             $table->dropForeign('oauth_session_scopes_scope_id_foreign');
         });
+
         Schema::drop('oauth_session_scopes');
     }
 }

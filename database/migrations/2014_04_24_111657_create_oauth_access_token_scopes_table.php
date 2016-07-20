@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth access token scopes table migration class.
@@ -37,13 +36,8 @@ class CreateOauthAccessTokenScopesTable extends Migration
             $table->index('access_token_id');
             $table->index('scope_id');
 
-            $table->foreign('access_token_id')
-                  ->references('id')->on('oauth_access_tokens')
-                  ->onDelete('cascade');
-
-            $table->foreign('scope_id')
-                  ->references('id')->on('oauth_scopes')
-                  ->onDelete('cascade');
+            $table->foreign('access_token_id')->references('id')->on('oauth_access_tokens')->onDelete('cascade');
+            $table->foreign('scope_id')->references('id')->on('oauth_scopes')->onDelete('cascade');
         });
     }
 
@@ -58,6 +52,7 @@ class CreateOauthAccessTokenScopesTable extends Migration
             $table->dropForeign('oauth_access_token_scopes_scope_id_foreign');
             $table->dropForeign('oauth_access_token_scopes_access_token_id_foreign');
         });
+
         Schema::drop('oauth_access_token_scopes');
     }
 }

@@ -34,17 +34,24 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
      */
     public function get($sessionId)
     {
-        $result = $this->getConnection()->table('oauth_sessions')
+        /*$result = $this->getConnection()->table('oauth_sessions')
                     ->where('oauth_sessions.id', $sessionId)
-                    ->first();
+                    ->first();*/
+
+        $result = $this->getConnection()->table('oauth_sessions')
+            ->where('id', $sessionId)
+            ->first();
 
         if (is_null($result)) {
-            return;
+            return null;
         }
 
-        return (new SessionEntity($this->getServer()))
+        /*return (new SessionEntity($this->getServer()))
                ->setId($result->id)
-               ->setOwner($result->owner_type, $result->owner_id);
+               ->setOwner($result->owner_type, $result->owner_id);*/
+        return (new SessionEntity($this->getServer()))
+            ->setId($result['id'])
+            ->setOwner($result['owner_type'], $result['owner_id']);
     }
 
     /**
@@ -56,19 +63,31 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
      */
     public function getByAccessToken(AccessTokenEntity $accessToken)
     {
-        $result = $this->getConnection()->table('oauth_sessions')
+        /*$result = $this->getConnection()->table('oauth_sessions')
                 ->select('oauth_sessions.*')
                 ->join('oauth_access_tokens', 'oauth_sessions.id', '=', 'oauth_access_tokens.session_id')
                 ->where('oauth_access_tokens.id', $accessToken->getId())
-                ->first();
+                ->first();*/
+
+        $allowedSessionIds = $this->getConnection()->table('oauth_access_tokens')
+            ->where('id', $accessToken->getId())
+            ->pluck('session_id');
+
+        $result = $this->getConnection()->table('oauth_sessions')
+            ->whereIn('id', $allowedSessionIds)
+            ->first();
 
         if (is_null($result)) {
-            return;
+            return null;
         }
 
-        return (new SessionEntity($this->getServer()))
+        /*return (new SessionEntity($this->getServer()))
                ->setId($result->id)
-               ->setOwner($result->owner_type, $result->owner_id);
+               ->setOwner($result->owner_type, $result->owner_id);*/
+
+        return (new SessionEntity($this->getServer()))
+            ->setId($result['id'])
+            ->setOwner($result['owner_type'], $result['owner_id']);
     }
 
     /**
@@ -81,18 +100,33 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
     public function getScopes(SessionEntity $session)
     {
         // TODO: Check this before pushing
-        $result = $this->getConnection()->table('oauth_session_scopes')
+        /*$result = $this->getConnection()->table('oauth_session_scopes')
                   ->select('oauth_scopes.*')
                   ->join('oauth_scopes', 'oauth_session_scopes.scope_id', '=', 'oauth_scopes.id')
                   ->where('oauth_session_scopes.session_id', $session->getId())
-                  ->get();
+                  ->get();*/
+
+        $result = $this->getConnection()->table('oauth_session_scopes')
+            ->where('session_id', $session->getId())
+            ->get();
 
         $scopes = [];
 
-        foreach ($result as $scope) {
+        /*foreach ($result as $scope) {
             $scopes[] = (new ScopeEntity($this->getServer()))->hydrate([
                 'id' => $scope->id,
                 'description' => $scope->description,
+            ]);
+        }*/
+
+        foreach ($result as $sessionScope) {
+            $scope = $this->getConnection()->table('oauth_scopes')
+                ->where('id', $accessTokenScope['scope_id'])
+                ->get();
+
+            $scopes[] = (new ScopeEntity($this->getServer()))->hydrate([
+                'id' => $scope['id'],
+                'description' => $scope['description'],
             ]);
         }
 
@@ -148,18 +182,30 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
      */
     public function getByAuthCode(AuthCodeEntity $authCode)
     {
-        $result = $this->getConnection()->table('oauth_sessions')
+        /*$result = $this->getConnection()->table('oauth_sessions')
             ->select('oauth_sessions.*')
             ->join('oauth_auth_codes', 'oauth_sessions.id', '=', 'oauth_auth_codes.session_id')
             ->where('oauth_auth_codes.id', $authCode->getId())
+            ->first();*/
+
+        $allowedSessionIds = $this->getConnection()->table('oauth_auth_codes')
+            ->where('id', $authCode->getId())
+            ->pluck('session_id');
+
+        $result = $this->getConnection()->table('oauth_sessions')
+            ->whereIn('id', $allowedSessionIds)
             ->first();
 
         if (is_null($result)) {
-            return;
+            return null;
         }
 
-        return (new SessionEntity($this->getServer()))
+        /*return (new SessionEntity($this->getServer()))
                ->setId($result->id)
-               ->setOwner($result->owner_type, $result->owner_id);
+               ->setOwner($result->owner_type, $result->owner_id);*/
+
+        return (new SessionEntity($this->getServer()))
+            ->setId($result['id'])
+            ->setOwner($result['owner_type'], $result['owner_id']);
     }
 }

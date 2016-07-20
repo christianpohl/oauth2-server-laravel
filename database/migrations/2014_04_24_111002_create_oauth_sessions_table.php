@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth sessions table migration class.
@@ -37,10 +36,7 @@ class CreateOauthSessionsTable extends Migration
 
             $table->index(['client_id', 'owner_type', 'owner_id']);
 
-            $table->foreign('client_id')
-                ->references('id')->on('oauth_clients')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->foreign('client_id')->references('id')->on('oauth_clients')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
@@ -54,6 +50,7 @@ class CreateOauthSessionsTable extends Migration
         Schema::table('oauth_sessions', function (Blueprint $table) {
             $table->dropForeign('oauth_sessions_client_id_foreign');
         });
+
         Schema::drop('oauth_sessions');
     }
 }

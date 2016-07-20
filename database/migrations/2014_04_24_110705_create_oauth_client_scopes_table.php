@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth client scopes table migration class.
@@ -37,13 +36,8 @@ class CreateOauthClientScopesTable extends Migration
             $table->index('client_id');
             $table->index('scope_id');
 
-            $table->foreign('client_id')
-                  ->references('id')->on('oauth_clients')
-                  ->onDelete('cascade');
-
-            $table->foreign('scope_id')
-                  ->references('id')->on('oauth_scopes')
-                  ->onDelete('cascade');
+            $table->foreign('client_id')->references('id')->on('oauth_clients')->onDelete('cascade');
+            $table->foreign('scope_id')->references('id')->on('oauth_scopes')->onDelete('cascade');
         });
     }
 
@@ -58,6 +52,7 @@ class CreateOauthClientScopesTable extends Migration
             $table->dropForeign('oauth_client_scopes_client_id_foreign');
             $table->dropForeign('oauth_client_scopes_scope_id_foreign');
         });
+
         Schema::drop('oauth_client_scopes');
     }
 }

@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth client table migration class.
@@ -28,12 +27,12 @@ class CreateOauthClientsTable extends Migration
     public function up()
     {
         Schema::create('oauth_clients', function (BluePrint $table) {
-            $table->string('id', 40)->primary();
+            $table->string('_id', 40)->primary();
             $table->string('secret', 40);
             $table->string('name');
             $table->timestamps();
 
-            $table->unique(['id', 'secret']);
+            $table->unique(['_id', 'secret']);
         });
     }
 

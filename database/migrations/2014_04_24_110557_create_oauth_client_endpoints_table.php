@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth client endpoints table migration class.
@@ -28,7 +27,7 @@ class CreateOauthClientEndpointsTable extends Migration
     public function up()
     {
         Schema::create('oauth_client_endpoints', function (Blueprint $table) {
-            $table->increments('id');
+            $table->increments('_id');
             $table->string('client_id', 40);
             $table->string('redirect_uri');
 
@@ -36,10 +35,7 @@ class CreateOauthClientEndpointsTable extends Migration
 
             $table->unique(['client_id', 'redirect_uri']);
 
-            $table->foreign('client_id')
-                ->references('id')->on('oauth_clients')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->foreign('client_id')->references('_id')->on('oauth_clients')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

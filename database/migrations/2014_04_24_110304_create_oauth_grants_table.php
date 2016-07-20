@@ -11,7 +11,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * This is the create oauth grants table migration class.
@@ -29,6 +28,7 @@ class CreateOauthGrantsTable extends Migration
     {
         Schema::create('oauth_grants', function (Blueprint $table) {
             $table->string('id', 40)->primary();
+
             $table->timestamps();
         });
     }
