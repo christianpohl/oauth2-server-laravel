@@ -26,7 +26,7 @@ class CreateOauthClientsTable extends Migration
      */
     public function up()
     {
-        Schema::create('oauth_clients', function (BluePrint $table) {
+        Schema::create('oauth_clients', function (Blueprint $table) {
             $table->string('_id', 40)->primary();
             $table->string('secret', 40);
             $table->string('name');
