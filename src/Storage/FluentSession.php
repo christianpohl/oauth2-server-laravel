@@ -188,15 +188,19 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
             ->where('oauth_auth_codes.id', $authCode->getId())
             ->first();*/
 
-        $allowedSessionIds = $this->getConnection()->table('oauth_auth_codes')
+        $allowedSessionId = $this->getConnection()->table('oauth_auth_codes')
             ->where('id', $authCode->getId())
-            ->pluck('session_id');
-
-        $result = $this->getConnection()->table('oauth_sessions')
-            ->whereIn('id', $allowedSessionIds)
             ->first();
 
-        if (is_null($result)) {
+        if (!$allowedSessionId) {
+            return null;
+        }
+
+        $result = $this->getConnection()->table('oauth_sessions')
+            ->where('_id', new \MongoDB\BSON\ObjectID($allowedSessionId['session_id']))
+            ->first();
+
+        if (!$result) {
             return null;
         }
 
@@ -205,7 +209,7 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
                ->setOwner($result->owner_type, $result->owner_id);*/
 
         return (new SessionEntity($this->getServer()))
-            ->setId($result['id'])
+            ->setId((string)$result['_id'])
             ->setOwner($result['owner_type'], $result['owner_id']);
     }
 }

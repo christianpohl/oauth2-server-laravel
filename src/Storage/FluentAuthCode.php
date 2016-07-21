@@ -43,7 +43,7 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
             ->first();
 
         if (is_null($result)) {
-            return;
+            return null;
         }
 
         return (new AuthCodeEntity($this->getServer()))
